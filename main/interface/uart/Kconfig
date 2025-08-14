@@ -34,6 +34,12 @@ if AT_BASE_ON_UART
                 0: flow control is disabled; 1: enable RTS; 2: enable CTS; 3: enable RTS and CTS
             default 1
             range 0 3
+
+        config AT_UART_DEFAULT_HALFDUPLEX
+            bool "Enable half duplex mode"
+            default "n"
+            help
+                Enable half duplex mode. In this mode, the UART can only send or receive data at one time.
     endmenu
 
 endif

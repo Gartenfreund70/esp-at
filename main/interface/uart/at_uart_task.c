@@ -186,13 +186,18 @@ static void at_uart_init(void)
     // set uart configuration
     uart_config_t config;
     at_uart_config_init(&config);
-    if (!at_nvs_uart_config_get(&config)) {
-        at_nvs_uart_config_set(&config);
-    }
+    //if (!at_nvs_uart_config_get(&config)) {
+    //    at_nvs_uart_config_set(&config);
+    //}
     uart_param_config(g_at_cmd_port, &config);
 
     // set uart pins
     uart_set_pin(g_at_cmd_port, g_uart_port_pin.tx_pin, g_uart_port_pin.rx_pin, g_uart_port_pin.rts_pin, g_uart_port_pin.cts_pin);
+
+#if CONFIG_AT_UART_DEFAULT_HALFDUPLEX
+    // enable half duplex mode
+    uart_set_mode(g_at_cmd_port, UART_MODE_RS485_HALF_DUPLEX);
+#endif
 
     // set uart interrupt
     at_uart_intr_config();
@@ -205,6 +210,9 @@ static void at_uart_init(void)
     ESP_AT_LOGI(TAG, "AT cmd port:uart%d tx:%d rx:%d cts:%d rts:%d baudrate:%d",
                 g_at_cmd_port, g_uart_port_pin.tx_pin, g_uart_port_pin.rx_pin,
                 g_uart_port_pin.cts_pin, g_uart_port_pin.rts_pin, config.baud_rate);
+    ESP_AT_LOGI(TAG, "            bits:%d par:%d stop:%d flow:%d half:%d",
+                config.data_bits + 5, at_uart_parity_get(config.parity),
+                config.stop_bits, config.flow_ctrl, CONFIG_AT_UART_DEFAULT_HALFDUPLEX ? 1 : 0);
 
     xTaskCreate(at_uart_task, "uTask", 1024, NULL, 1, &s_task_handle);
 }
