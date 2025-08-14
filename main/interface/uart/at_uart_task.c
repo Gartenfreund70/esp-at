@@ -186,15 +186,17 @@ static void at_uart_init(void)
     // set uart configuration
     uart_config_t config;
     at_uart_config_init(&config);
-    //if (!at_nvs_uart_config_get(&config)) {
-    //    at_nvs_uart_config_set(&config);
-    //}
+#ifndef CONFIG_AT_UART_DEFAULT_HALFDUPLEX
+    if (!at_nvs_uart_config_get(&config)) {
+        at_nvs_uart_config_set(&config);
+    }
+#endif
     uart_param_config(g_at_cmd_port, &config);
 
     // set uart pins
     uart_set_pin(g_at_cmd_port, g_uart_port_pin.tx_pin, g_uart_port_pin.rx_pin, g_uart_port_pin.rts_pin, g_uart_port_pin.cts_pin);
 
-#if CONFIG_AT_UART_DEFAULT_HALFDUPLEX
+#ifdef CONFIG_AT_UART_DEFAULT_HALFDUPLEX
     // enable half duplex mode
     uart_set_mode(g_at_cmd_port, UART_MODE_RS485_HALF_DUPLEX);
 #endif
