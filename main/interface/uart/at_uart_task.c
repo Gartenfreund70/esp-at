@@ -212,9 +212,12 @@ static void at_uart_init(void)
     ESP_AT_LOGI(TAG, "AT cmd port:uart%d tx:%d rx:%d cts:%d rts:%d baudrate:%d",
                 g_at_cmd_port, g_uart_port_pin.tx_pin, g_uart_port_pin.rx_pin,
                 g_uart_port_pin.cts_pin, g_uart_port_pin.rts_pin, config.baud_rate);
-    ESP_AT_LOGI(TAG, "            bits:%d par:%d stop:%d flow:%d half:%d",
+    ESP_AT_LOGI(TAG, "            bits:%d par:%d stop:%d flow:%d",
                 config.data_bits + 5, at_uart_parity_get(config.parity),
-                config.stop_bits, config.flow_ctrl, CONFIG_AT_UART_DEFAULT_HALFDUPLEX ? 1 : 0);
+                config.stop_bits, config.flow_ctrl);
+#ifdef CONFIG_AT_UART_DEFAULT_HALFDUPLEX
+    ESP_AT_LOGI(TAG, "            halfduplex enabled");
+#endif
 
     xTaskCreate(at_uart_task, "uTask", 1024, NULL, 1, &s_task_handle);
 }
