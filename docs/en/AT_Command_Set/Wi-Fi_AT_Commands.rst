@@ -8,6 +8,7 @@ Wi-Fi AT Commands
 -  :ref:`Introduction <cmd-wifi-intro>`
 -  :ref:`AT+CWINIT <cmd-INIT>`: Initialize/Deinitialize Wi-Fi driver.
 -  :ref:`AT+CWMODE <cmd-MODE>`: Set the Wi-Fi mode (Station/SoftAP/Station+SoftAP).
+-  :ref:`AT+CWBANDWIDTH <cmd-CWBANDWIDTH>`: Query/Set Wi-Fi bandwidth.
 -  :ref:`AT+CWSTATE <cmd-WSTATE>`: Query the Wi-Fi state and Wi-Fi information.
 -  :ref:`AT+CWCONFIG <cmd-CWCONFIG>`: Query/Set Wi-Fi inactive time and listen interval time.
 -  :ref:`AT+CWJAP <cmd-JAP>`: Connect to an AP.
@@ -178,7 +179,7 @@ Note
 
 - The configuration changes will be saved in the NVS partition if :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`.
 
-.. only:: esp32 or esp32c2 or esp32c3 or esp32c6
+.. only:: esp32 or esp32c2 or esp32c3 or esp32c5 or esp32c6
 
   - If you have previously used the Bluetooth function, it is recommended to send the following commands to deinitialize the initialized functions before using the SoftAP or SoftAP+Station functions:
 
@@ -186,7 +187,7 @@ Note
 
         - :ref:`AT+BTINIT=0 <cmd-BTINIT>` (Deinitialize Classic Bluetooth)
 
-    .. only:: esp32 or esp32c2 or esp32c3 or esp32c6
+    .. only:: esp32 or esp32c2 or esp32c3 or esp32c5 or esp32c6
 
         - :ref:`AT+BLEINIT=0 <cmd-BINIT>` (Deinitialize Bluetooth LE)
         - :ref:`AT+BLUFI=0 <cmd-BLUFI>` (Disable BluFi)
@@ -199,6 +200,73 @@ Example
 ::
 
     AT+CWMODE=3 
+
+.. _cmd-CWBANDWIDTH:
+
+:ref:`AT+CWBANDWIDTH <WiFi-AT>`: Query/Set Wi-Fi Bandwidth
+----------------------------------------------------------
+
+Query Command
+^^^^^^^^^^^^^
+
+**Command:**
+
+::
+
+    AT+CWBANDWIDTH?
+
+**Response:**
+
+::
+
+    +CWBANDWIDTH:<netif>,<bandwidth_2ghz>,<bandwidth_5ghz>
+
+    OK
+
+Set Command
+^^^^^^^^^^^
+
+**Command:**
+
+::
+
+    AT+CWBANDWIDTH=<netif>,<bandwidth_2ghz>[,<bandwidth_5ghz>]
+
+**Response:**
+
+::
+
+    OK
+
+Parameters
+^^^^^^^^^^
+
+- **<netif>**:
+
+  - 0: Station interface
+  - 1: SoftAP interface
+
+- **<bandwidth_2ghz>**: 2.4 GHz bandwidth
+
+  - 0: Not supported, only valid in query command
+  - 1: 20 MHz
+  - 2: 40 MHz
+
+.. only:: esp32c5
+
+  - **<bandwidth_5ghz>**: 5 GHz bandwidth
+
+    - 0: Not supported, only valid in query command
+    - 1: 20 MHz
+    - 2: 40 MHz
+    - 3: 80 MHz
+    - 4: 160 MHz
+    - 5: 80+80 MHz
+
+Note
+^^^^
+
+- If :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`, this setting will be saved in the NVS partition.
 
 .. _cmd-WSTATE:
 
@@ -1157,7 +1225,7 @@ Parameters
    -  bit2: 802.11n protocol standard.
    -  bit3: `802.11 LR Espressif-patented protocol standard <https://docs.espressif.com/projects/esp-idf/en/latest/{IDF_TARGET_PATH_NAME}/api-guides/wifi.html#long-range-lr>`_.
 
-   .. only:: esp32c6
+   .. only:: esp32c5 or esp32c6
 
      - bit4: 802.11ax protocol standard.
 
@@ -1171,7 +1239,7 @@ Note
 
   -  By default, PHY mode of {IDF_TARGET_NAME} is 802.11bgn mode.
 
-.. only:: esp32c6
+.. only:: esp32c5 or esp32c6
 
   -  By default, PHY mode of {IDF_TARGET_NAME} is 802.11bgnax mode.
 
@@ -1221,7 +1289,7 @@ Parameters
    -  bit2: 802.11n protocol standard.
    -  bit3: `802.11 LR Espressif-patented protocol standard <https://docs.espressif.com/projects/esp-idf/en/latest/{IDF_TARGET_PATH_NAME}/api-guides/wifi.html#long-range-lr>`_.
 
-   .. only:: esp32c6
+   .. only:: esp32c5 or esp32c6
 
      - bit4: 802.11ax protocol standard.
 
@@ -1235,7 +1303,7 @@ Note
 
   -  By default, PHY mode of {IDF_TARGET_NAME} is 802.11bgn mode.
 
-.. only:: esp32c6
+.. only:: esp32c5 or esp32c6
 
   -  By default, PHY mode of {IDF_TARGET_NAME} is 802.11bgnax mode.
 
@@ -1295,7 +1363,7 @@ Notes
 
   - The configuration changes will be saved in the NVS partition if :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`.
   :esp32: - The MAC address of {IDF_TARGET_NAME} Station is different from that of the {IDF_TARGET_NAME} SoftAP and {IDF_TARGET_NAME} Ethernet. Please make sure that you do not set the same MAC address for both of them.
-  :esp32c2 or esp32c3 or esp32c6: - The MAC address of {IDF_TARGET_NAME} Station is different from that of the {IDF_TARGET_NAME} SoftAP. Please make sure that you do not set the same MAC address for both of them.
+  :esp32c2 or esp32c3 or esp32c5 or esp32c6: - The MAC address of {IDF_TARGET_NAME} Station is different from that of the {IDF_TARGET_NAME} SoftAP. Please make sure that you do not set the same MAC address for both of them.
   - Bit 0 of the {IDF_TARGET_NAME} MAC address CANNOT be 1. For example, a MAC address can be "1a:…" but not "15:…".
   - FF:FF:FF:FF:FF:FF and 00:00:00:00:00:00 are invalid MAC address and cannot be set.
 
@@ -1361,7 +1429,7 @@ Notes
 
   - The configuration changes will be saved in the NVS partition if :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`.
   :esp32: - The MAC address of {IDF_TARGET_NAME} SoftAP is different from that of the {IDF_TARGET_NAME} station and {IDF_TARGET_NAME} Ethernet. Please make sure that you do not set the same MAC address for both of them.
-  :esp32c2 or esp32c3 or esp32c6: - The MAC address of {IDF_TARGET_NAME} SoftAP is different from that of the {IDF_TARGET_NAME} station. Please make sure that you do not set the same MAC address for both of them.
+  :esp32c2 or esp32c3 or esp32c5 or esp32c6: - The MAC address of {IDF_TARGET_NAME} SoftAP is different from that of the {IDF_TARGET_NAME} station. Please make sure that you do not set the same MAC address for both of them.
   - Bit 0 of the {IDF_TARGET_NAME} MAC address CANNOT be 1. For example, a MAC address can be "18:…" but not "15:…".
   - FF:FF:FF:FF:FF:FF and 00:00:00:00:00:00 are invalid MAC and cannot be set.
 

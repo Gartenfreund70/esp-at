@@ -8,6 +8,7 @@ Wi-Fi AT 命令集
 -  :ref:`介绍 <cmd-wifi-intro>`
 -  :ref:`AT+CWINIT <cmd-INIT>`：初始化/清理 Wi-Fi 驱动程序
 -  :ref:`AT+CWMODE <cmd-MODE>`：查询/设置 Wi-Fi 模式 (Station/SoftAP/Station+SoftAP)
+-  :ref:`AT+CWBANDWIDTH <cmd-CWBANDWIDTH>`：查询/设置 Wi-Fi 带宽
 -  :ref:`AT+CWSTATE <cmd-WSTATE>`：查询 Wi-Fi 状态和 Wi-Fi 信息
 -  :ref:`AT+CWCONFIG <cmd-CWCONFIG>`：查询/设置 Wi-Fi 非活动时间和监听间隔时间
 -  :ref:`AT+CWJAP <cmd-JAP>`：连接 AP
@@ -178,7 +179,7 @@ Wi-Fi AT 命令集
 
 - 若 :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`，本设置将保存在 NVS 分区
 
-.. only:: esp32 or esp32c2 or esp32c3 or esp32c6
+.. only:: esp32 or esp32c2 or esp32c3 or esp32c5 or esp32c6
 
   - 如您之前使用过蓝牙功能，为获得更好的性能，建议在使用 SoftAP 或 SoftAP+Station 功能前，先发送以下命令注销已初始化过的功能：
 
@@ -186,7 +187,7 @@ Wi-Fi AT 命令集
 
         - :ref:`AT+BTINIT=0 <cmd-BTINIT>` （注销 Classic Bluetooth）
 
-    .. only:: esp32 or esp32c2 or esp32c3 or esp32c6
+    .. only:: esp32 or esp32c2 or esp32c3 or esp32c5 or esp32c6
 
         - :ref:`AT+BLEINIT=0 <cmd-BINIT>` （注销 Bluetooth LE）
         - :ref:`AT+BLUFI=0 <cmd-BLUFI>` （关闭 BluFi）
@@ -199,6 +200,73 @@ Wi-Fi AT 命令集
 ::
 
     AT+CWMODE=3 
+
+.. _cmd-CWBANDWIDTH:
+
+:ref:`AT+CWBANDWIDTH <WiFi-AT>`：查询/设置 Wi-Fi 带宽
+-----------------------------------------------------------------
+
+查询命令
+^^^^^^^^
+
+**命令：**
+
+::
+
+    AT+CWBANDWIDTH?
+
+**响应：**
+
+::
+
+    +CWBANDWIDTH:<netif>,<bandwidth_2ghz>,<bandwidth_5ghz>
+
+    OK
+
+设置命令
+^^^^^^^^
+
+**命令：**
+
+::
+
+    AT+CWBANDWIDTH=<netif>,<bandwidth_2ghz>[,<bandwidth_5ghz>]
+
+**响应：**
+
+::
+
+    OK
+
+参数
+^^^^
+
+- **<netif>**：
+
+  - 0: Station 接口
+  - 1: SoftAP 接口
+
+- **<bandwidth_2ghz>**：2.4 GHz 带宽
+
+  - 0: 不支持，仅在查询命令中有效
+  - 1: 20 MHz
+  - 2: 40 MHz
+
+.. only:: esp32c5
+
+  - **<bandwidth_5ghz>**：5 GHz 带宽
+
+    - 0: 不支持，仅在查询命令中有效
+    - 1: 20 MHz
+    - 2: 40 MHz
+    - 3: 80 MHz
+    - 4: 160 MHz
+    - 5: 80+80 MHz
+
+说明
+^^^^
+
+- 若 :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`，本设置将保存在 NVS 分区
 
 .. _cmd-WSTATE:
 
@@ -1157,7 +1225,7 @@ Wi-Fi AT 命令集
    -  bit2: 802.11n 协议标准
    -  bit3: `802.11 LR 乐鑫专利协议标准 <https://docs.espressif.com/projects/esp-idf/zh_CN/latest/{IDF_TARGET_PATH_NAME}/api-guides/wifi.html#lr>`_
 
-   .. only:: esp32c6
+   .. only:: esp32c5 or esp32c6
 
      - bit4: 802.11ax 协议标准
 
@@ -1171,7 +1239,7 @@ Wi-Fi AT 命令集
 
   - 默认情况下，{IDF_TARGET_NAME} 设备的 PHY mode 是 802.11bgn 模式
 
-.. only:: esp32c6
+.. only:: esp32c5 or esp32c6
 
   -  默认情况下，{IDF_TARGET_NAME} 设备的 PHY mode 是 802.11bgnax 模式
 
@@ -1221,7 +1289,7 @@ Wi-Fi AT 命令集
    -  bit2: 802.11n 协议标准
    -  bit3: `802.11 LR 乐鑫专利协议标准 <https://docs.espressif.com/projects/esp-idf/zh_CN/latest/{IDF_TARGET_PATH_NAME}/api-guides/wifi.html#lr>`_
 
-   .. only:: esp32c6
+   .. only:: esp32c5 or esp32c6
 
      - bit4: 802.11ax 协议标准
 
@@ -1235,7 +1303,7 @@ Wi-Fi AT 命令集
 
   - 默认情况下，{IDF_TARGET_NAME} 设备的 PHY mode 是 802.11bgn 模式
 
-.. only:: esp32c6
+.. only:: esp32c5 or esp32c6
 
   -  默认情况下，{IDF_TARGET_NAME} 设备的 PHY mode 是 802.11bgnax 模式
 
@@ -1295,7 +1363,7 @@ Wi-Fi AT 命令集
   
   - 若 :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`，配置更改将保存到 NVS 分区
   :esp32: - {IDF_TARGET_NAME} Station 的 MAC 地址与 {IDF_TARGET_NAME} Ethernet 和 {IDF_TARGET_NAME} SoftAP 不同，不要为二者设置同样的 MAC 地址
-  :esp32c2 or esp32c3 or esp32c6: - {IDF_TARGET_NAME} Station 的 MAC 地址与 {IDF_TARGET_NAME} SoftAP 不同，不要为二者设置同样的 MAC 地址
+  :esp32c2 or esp32c3 or esp32c5 or esp32c6: - {IDF_TARGET_NAME} Station 的 MAC 地址与 {IDF_TARGET_NAME} SoftAP 不同，不要为二者设置同样的 MAC 地址
   - MAC 地址的 Bit 0 不能为 1，例如，MAC 地址可以是 "1a:…"，但不可以是 "15:…"
   - FF:FF:FF:FF:FF:FF 和 00:00:00:00:00:00 是无效地址，不能设置
 
@@ -1361,7 +1429,7 @@ Wi-Fi AT 命令集
 
   - 若 :ref:`AT+SYSSTORE=1 <cmd-SYSSTORE>`，配置更改将保存到 NVS 分区
   :esp32: - {IDF_TARGET_NAME} SoftAP 的 MAC 地址与 {IDF_TARGET_NAME} Station 和 {IDF_TARGET_NAME} Ethernet 不同，不要为二者设置同样的 MAC 地址
-  :esp32c2 or esp32c3 or esp32c6: - {IDF_TARGET_NAME} SoftAP 的 MAC 地址与 {IDF_TARGET_NAME} Station 不同，不要为二者设置同样的 MAC 地址
+  :esp32c2 or esp32c3 or esp32c5 or esp32c6: - {IDF_TARGET_NAME} SoftAP 的 MAC 地址与 {IDF_TARGET_NAME} Station 不同，不要为二者设置同样的 MAC 地址
   - MAC 地址的 Bit 0 不能为 1，例如，MAC 地址可以是 "18:…"，但不可以是 "15:…"
   - FF:FF:FF:FF:FF:FF 和 00:00:00:00:00:00 是无效地址，不能设置
 
